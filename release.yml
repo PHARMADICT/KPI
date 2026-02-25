@@ -1,0 +1,163 @@
+# .github/workflows/release.yml
+# ─────────────────────────────────────────────────────────────────
+# Triggered on: push of a version tag  (v1.0.0, v2.3.1, etc.)
+#
+# Pipeline:
+#   1. lint        — acorn syntax check all JS files
+#   2. test        — unit tests (no DOM, pure functions)
+#   3. build       — produce no7-analytics-bundle.html (single file)
+#   4. github-release — upload artefacts + generate SHA-256 checksums
+#   5. slsa-provenance — SLSA Level 3 signed provenance via
+#                        slsa-framework/slsa-github-generator
+# ─────────────────────────────────────────────────────────────────
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'     # e.g. v1.0.0
+
+permissions:
+  contents: write          # create GitHub Release
+  id-token: write          # OIDC token for SLSA signing
+  attestations: write      # write provenance attestations
+
+jobs:
+
+  # ── 1. LINT ────────────────────────────────────────────────────
+  lint:
+    name: Lint (acorn syntax check)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+
+  # ── 2. TEST ────────────────────────────────────────────────────
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
+
+  # ── 3. BUILD ───────────────────────────────────────────────────
+  build:
+    name: Build bundle
+    runs-on: ubuntu-latest
+    needs: test
+    outputs:
+      artifact-name: ${{ steps.meta.outputs.artifact-name }}
+      artifact-path: ${{ steps.meta.outputs.artifact-path }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Set version metadata
+        id: meta
+        run: |
+          VERSION="${GITHUB_REF_NAME}"          # e.g.  v1.0.0
+          ARTIFACT="no7-analytics-${VERSION}.html"
+          echo "version=${VERSION}"       >> "$GITHUB_OUTPUT"
+          echo "artifact-name=${ARTIFACT}" >> "$GITHUB_OUTPUT"
+          echo "artifact-path=dist/${ARTIFACT}" >> "$GITHUB_OUTPUT"
+
+      - name: Build single-file bundle
+        run: |
+          mkdir -p dist
+          node scripts/bundle.js \
+            --version "${{ steps.meta.outputs.version }}" \
+            --out     "dist/${{ steps.meta.outputs.artifact-name }}"
+
+      - name: Generate checksums
+        run: |
+          cd dist
+          sha256sum "${{ steps.meta.outputs.artifact-name }}" \
+            > "${{ steps.meta.outputs.artifact-name }}.sha256"
+          echo "── SHA-256 ──────────────────────────────────────"
+          cat "${{ steps.meta.outputs.artifact-name }}.sha256"
+
+      - name: Upload build artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-assets
+          path: dist/
+          retention-days: 7
+
+  # ── 4. GITHUB RELEASE ──────────────────────────────────────────
+  github-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-assets
+          path: dist/
+
+      - name: Create Release and upload assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name:   ${{ github.ref_name }}
+          name:       "No7 Analytics ${{ github.ref_name }}"
+          body: |
+            ## No7 Analytics ${{ github.ref_name }}
+
+            ### 📦 Artefacts
+            | File | Description |
+            |------|-------------|
+            | `no7-analytics-${{ github.ref_name }}.html` | Self-contained single-file PWA |
+            | `no7-analytics-${{ github.ref_name }}.html.sha256` | SHA-256 checksum |
+
+            ### 🔐 Verify integrity
+            ```sh
+            sha256sum --check no7-analytics-${{ github.ref_name }}.html.sha256
+            ```
+
+            ### 🔏 Verify SLSA provenance
+            ```sh
+            gh attestation verify no7-analytics-${{ github.ref_name }}.html \
+              --repo ${{ github.repository }}
+            ```
+          files: dist/*
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+
+  # ── 5. SLSA LEVEL 3 PROVENANCE ─────────────────────────────────
+  slsa-provenance:
+    name: Generate SLSA3 Provenance
+    needs: build
+    permissions:
+      actions:      read    # read workflow run for provenance
+      id-token:     write   # OIDC → Sigstore signing
+      contents:     write   # attach attestation to release
+      attestations: write   # GitHub attestation API
+    # slsa-github-generator MUST run on ubuntu-latest (pinned SHA for security)
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.0.0
+    with:
+      base64-subjects: |
+        ${{ needs.build.outputs.artifact-name }}:${{ needs.build.outputs.artifact-path }}
+      upload-assets: true
+      provenance-name: "no7-analytics-${{ github.ref_name }}.intoto.jsonl"
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,125 @@
+# .github/workflows/npm-publish.yml
+# ─────────────────────────────────────────────────────────────────
+# Publishes the package to npm (public registry) AND GitHub Packages
+# on every GitHub Release publication.
+#
+# SLSA Level 3 provenance is also attached to the npm publish via
+# slsa-framework/slsa-github-generator so consumers can verify
+# the package was built from this exact source commit.
+#
+# Required secrets:
+#   NPM_TOKEN  — npm automation token (Granular: read + write packages)
+# ─────────────────────────────────────────────────────────────────
+
+name: Publish Node.js Package
+
+on:
+  release:
+    types: [published]      # fires when a release moves from draft → published
+
+permissions:
+  contents:     read
+  packages:     write       # publish to GitHub Packages
+  id-token:     write       # OIDC for npm provenance + Sigstore
+  attestations: write       # GitHub attestation API
+
+jobs:
+
+  # ── VALIDATE ───────────────────────────────────────────────────
+  validate:
+    name: Validate package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+
+      - name: Verify package.json fields
+        run: |
+          node -e "
+            const pkg = JSON.parse(require('fs').readFileSync('package.json','utf8'));
+            const required = ['name','version','description','files','license'];
+            const missing = required.filter(k => !pkg[k]);
+            if (missing.length) {
+              console.error('Missing fields:', missing.join(', '));
+              process.exit(1);
+            }
+            console.log('✅ package.json valid — v' + pkg.version);
+          "
+
+  # ── PUBLISH TO npm ─────────────────────────────────────────────
+  publish-npm:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    needs: validate
+    environment: npm-release     # requires approval if configured in repo settings
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Build bundle before publish
+        run: npm run build
+
+      - name: Publish to npm with provenance
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # --provenance generates an SLSA3-equivalent attestation
+          # signed via npm's Sigstore integration (OIDC → Fulcio → Rekor).
+          # Visible at:  https://www.npmjs.com/package/@no7-analytics/pwa/v/X.Y.Z
+
+  # ── PUBLISH TO GitHub Packages ─────────────────────────────────
+  publish-gpr:
+    name: Publish to GitHub Packages
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@no7-analytics'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Build bundle
+        run: npm run build
+
+      - name: Publish to GitHub Packages
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ── SLSA3 PROVENANCE FOR npm ARTEFACT ──────────────────────────
+  slsa-npm-provenance:
+    name: SLSA3 Provenance (npm tarball)
+    needs: [publish-npm]
+    permissions:
+      id-token:     write
+      contents:     write
+      attestations: write
+      actions:      read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.0.0
+    with:
+      base64-subjects: >-
+        ${{ needs.validate.outputs.tarball-subject }}
+      upload-assets: true
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

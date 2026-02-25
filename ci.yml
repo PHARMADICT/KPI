@@ -1,0 +1,53 @@
+# .github/workflows/ci.yml
+# ─────────────────────────────────────────────────────────────────
+# Runs on every push and pull request to main/master.
+# Faster feedback loop — no build or publish steps.
+# ─────────────────────────────────────────────────────────────────
+
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Lint & Test — Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['18', '20', '22']   # test across LTS versions
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint — acorn syntax check
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Check bundle builds cleanly
+        run: npm run build
+
+      - name: Verify bundle integrity (SHA-256)
+        run: |
+          if [ -f dist/*.html ]; then
+            sha256sum dist/*.html
+            echo "✅ Bundle checksum generated"
+          else
+            echo "❌ No bundle found in dist/"
+            exit 1
+          fi

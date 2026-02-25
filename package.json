@@ -1,0 +1,28 @@
+{
+  "name": "@no7-analytics/pwa",
+  "version": "1.0.0",
+  "description": "No7 Beauty Dubai Airport T3 — Sales Performance PWA",
+  "private": false,
+  "type": "module",
+  "main": "js/app.js",
+  "files": [
+    "index.html",
+    "manifest.json",
+    "sw.js",
+    "css/",
+    "js/",
+    "assets/"
+  ],
+  "scripts": {
+    "lint":  "node scripts/lint.js",
+    "test":  "node scripts/test.js",
+    "build": "node scripts/bundle.js",
+    "start": "node scripts/serve.js"
+  },
+  "keywords": ["pwa", "retail", "sales", "no7", "analytics"],
+  "license": "MIT",
+  "engines": { "node": ">=18.0.0" },
+  "devDependencies": {
+    "acorn": "^8.11.3"
+  }
+}
