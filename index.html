@@ -2,1086 +2,1092 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>BootsRx Shift Log</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="BootsRx">
-<meta name="theme-color" content="#F5F8FF">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1A6B5A">
+<link rel="manifest" href="./manifest.json">
+<title>Tracker Made Easy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
 <style>
 :root {
-  --bg: #F5F8FF;
+  --bg: #F5F2ED;
   --surface: #FFFFFF;
-  --surface-alt: #F0F5FF;
-  --border: #E1EAF8;
-  --border-light: #EEF3FD;
-  --primary: #1A5FD4;
-  --primary-mid: #2B7FFF;
-  --primary-light: #60A5FA;
-  --primary-soft: #DEEAFF;
+  --surface-alt: #F0EDE8;
+  --border: #E5E0D8;
+  --border-light: #F0ECE5;
+  --primary: #1A6B5A;
+  --primary-mid: #2D8A75;
+  --primary-light: #5BAF9A;
+  --primary-soft: #D4EDE6;
   --success: #059669;
-  --success-soft: #CFFAE4;
+  --success-soft: #D1FAE5;
   --warning: #D97706;
   --warning-soft: #FEF3C7;
   --danger: #DC2626;
   --danger-soft: #FEE2E2;
-  --text-1: #0D1B2E;
-  --text-2: #2E4870;
-  --text-3: #667FA8;
-  --text-4: #A8BFDB;
-  --font-d: 'Nunito', sans-serif;
-  --font-b: 'DM Sans', sans-serif;
-  --font-m: 'JetBrains Mono', monospace;
-  --r: 16px;
+  --text-1: #1A1815;
+  --text-2: #4A4640;
+  --text-3: #7A7570;
+  --text-4: #B0ABA5;
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --r: 14px;
   --r-sm: 10px;
-  --r-lg: 22px;
+  --r-lg: 20px;
   --r-xl: 28px;
-  --sh: 0 2px 12px rgba(26,95,212,0.07),0 1px 3px rgba(13,27,46,0.05);
-  --sh-lg: 0 8px 32px rgba(26,95,212,0.13),0 2px 8px rgba(13,27,46,0.06);
-  --sh-primary: 0 8px 28px rgba(26,95,212,0.3),0 2px 8px rgba(26,95,212,0.15);
+  --sh: 0 2px 12px rgba(26,107,90,0.06), 0 1px 3px rgba(26,24,21,0.04);
+  --sh-lg: 0 8px 32px rgba(26,107,90,0.12), 0 2px 8px rgba(26,24,21,0.05);
   --nav-h: 68px;
-  --safe-b: env(safe-area-inset-bottom,0px);
-  --safe-t: env(safe-area-inset-top,0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{height:100%;overscroll-behavior:none}
-body{height:100%;font-family:var(--font-b);background:var(--bg);color:var(--text-1);overflow:hidden;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
-#app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}
-.screens{flex:1;overflow:hidden;position:relative}
-.screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--nav-h) + var(--safe-b) + 20px);opacity:0;pointer-events:none;transform:translateX(18px);transition:opacity .22s ease,transform .22s ease}
-.screen.active{opacity:1;pointer-events:all;transform:translateX(0)}
 
-/* ── BOTTOM NAV ── */
-.bottom-nav{height:calc(var(--nav-h) + var(--safe-b));padding-bottom:var(--safe-b);background:var(--surface);border-top:1px solid var(--border-light);display:flex;align-items:center;box-shadow:0 -4px 20px rgba(13,27,46,0.06);flex-shrink:0;z-index:100}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;cursor:pointer;border:none;background:none;color:var(--text-4);font-family:var(--font-b);font-size:11px;font-weight:600;transition:color .2s;-webkit-tap-highlight-color:transparent}
-.nav-btn.active{color:var(--primary)}
-.nav-icon{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:background .2s,transform .15s;font-size:20px}
-.nav-btn.active .nav-icon{background:var(--primary-soft);transform:translateY(-1px)}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { height: 100%; overscroll-behavior: none; }
+body {
+  height: 100%;
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text-1);
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
 
-/* ── WRAPPER ── */
-.wrap{padding:0 16px;max-width:480px;margin:0 auto}
+#app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-/* ── HOME HEADER ── */
-.home-hdr{padding:calc(var(--safe-t) + 14px) 16px 10px;max-width:480px;margin:0 auto;display:flex;align-items:flex-start;justify-content:space-between}
-.hdr-day{font-family:var(--font-d);font-size:12px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.09em}
-.hdr-date{font-family:var(--font-d);font-size:22px;font-weight:900;color:var(--text-1);line-height:1.1}
-.bell-btn{width:38px;height:38px;border-radius:50%;background:var(--surface);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:var(--sh);cursor:pointer;flex-shrink:0;margin-top:2px;transition:transform .15s}
-.bell-btn:active{transform:scale(.9)}
+/* Status Bar */
+.status-bar {
+  height: var(--safe-t);
+  background: transparent;
+}
 
-/* ── BIG SHIFT WIDGET ── */
-.shift-widget{margin:0 16px 14px;max-width:calc(480px - 32px);margin-left:auto;margin-right:auto;background:linear-gradient(140deg,#0D47A1 0%,#1A6ED8 55%,#2B9FFF 100%);border-radius:var(--r-xl);padding:22px 22px 20px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--sh-primary)}
-.shift-widget::before{content:'';position:absolute;top:-50px;right:-40px;width:180px;height:180px;background:rgba(255,255,255,.07);border-radius:50%}
-.shift-widget::after{content:'';position:absolute;bottom:-70px;left:-20px;width:220px;height:220px;background:rgba(255,255,255,.04);border-radius:50%}
-.sw-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;position:relative;z-index:1}
-.sw-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;opacity:.7}
-.sw-badge{font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.18);backdrop-filter:blur(6px)}
-.sw-badge.live{background:rgba(5,150,105,.75)}
-.sw-badge.done{background:rgba(16,185,129,.75)}
-.sw-time{font-family:var(--font-d);font-size:52px;font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:3px;position:relative;z-index:1}
-.sw-time.empty{font-size:28px;opacity:.55}
-.sw-type{font-family:var(--font-d);font-size:15px;font-weight:700;opacity:.82;margin-bottom:14px;position:relative;z-index:1}
-.sw-meta{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px;position:relative;z-index:1}
-.sw-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.16);backdrop-filter:blur(6px);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:600}
-.btn-start{width:100%;height:52px;background:#fff;color:var(--primary);border:none;border-radius:var(--r);font-family:var(--font-d);font-size:16px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 18px rgba(0,0,0,.18);position:relative;z-index:1;letter-spacing:.02em}
-.btn-start:active{transform:scale(.97)}
-.btn-start.live{background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.4);box-shadow:none}
-.btn-start.done-mode{background:rgba(255,255,255,.12);color:#fff;border:2px solid rgba(255,255,255,.3);box-shadow:none;opacity:.8}
+/* Top Bar */
+.topbar {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+}
 
-/* ── SHIFT TIME ROW ── */
-.time-row{display:flex;gap:10px;margin:0 16px 14px;max-width:calc(480px - 32px);margin-left:auto;margin-right:auto}
-.time-box{flex:1;background:var(--surface);border:1.5px solid var(--border-light);border-radius:var(--r);padding:11px 14px;box-shadow:var(--sh)}
-.time-box-label{font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:4px}
-.time-input{border:none;background:transparent;font-family:var(--font-m);font-size:20px;font-weight:600;color:var(--text-1);outline:none;width:100%}
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+}
 
-/* ── STAFF CARD ── */
-.staff-card{margin:0 16px 14px;max-width:calc(480px - 32px);margin-left:auto;margin-right:auto;background:var(--surface);border:1.5px solid var(--border-light);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh)}
-.card-label{font-family:var(--font-d);font-size:11px;font-weight:800;color:var(--text-3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:10px;display:flex;align-items:center;gap:5px}
-.staff-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.staff-tag{display:flex;align-items:center;gap:4px;background:var(--primary-soft);color:var(--primary);border-radius:20px;padding:5px 11px 5px 13px;font-size:13px;font-weight:700}
-.tag-x{background:none;border:none;color:var(--primary);cursor:pointer;font-size:17px;padding:0;line-height:1;opacity:.65;transition:opacity .15s}
-.tag-x:active{opacity:1}
-.staff-row{display:flex;gap:8px}
-.staff-field{flex:1;height:38px;border:1.5px solid var(--border);border-radius:10px;padding:0 12px;font-family:var(--font-b);font-size:14px;color:var(--text-1);outline:none;background:var(--surface-alt);transition:border-color .2s}
-.staff-field:focus{border-color:var(--primary);background:#fff}
-.btn-add{width:38px;height:38px;border-radius:10px;background:var(--primary);color:#fff;border:none;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
-.btn-add:active{transform:scale(.9)}
+.store-badge {
+  background: var(--primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
-/* ── NOTES CARD ── */
-.notes-card{margin:0 16px 14px;max-width:calc(480px - 32px);margin-left:auto;margin-right:auto;background:var(--warning-soft);border:1.5px solid #FCD34D;border-radius:var(--r);padding:13px 16px}
-.notes-lbl{font-family:var(--font-d);font-size:11px;font-weight:800;color:var(--warning);text-transform:uppercase;letter-spacing:.09em;margin-bottom:6px;display:flex;align-items:center;gap:5px}
-.notes-ta{width:100%;border:none;background:transparent;font-family:var(--font-b);font-size:14px;color:var(--text-1);resize:none;outline:none;min-height:44px;line-height:1.55}
+/* Screen Container */
+.screens {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
 
-/* ── SECTION HDR ── */
-.sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:0 16px;margin:10px auto 8px;max-width:480px}
-.sec-title{font-family:var(--font-d);font-size:13px;font-weight:900;color:var(--text-2);text-transform:uppercase;letter-spacing:.09em;display:flex;align-items:center;gap:6px}
-.sec-dot{width:7px;height:7px;border-radius:50%;background:var(--primary);flex-shrink:0}
-.sec-badge{font-size:12px;font-weight:700;color:var(--primary);background:var(--primary-soft);padding:3px 9px;border-radius:20px}
-.sec-badge.ok{color:var(--success);background:var(--success-soft)}
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(var(--nav-h) + var(--safe-b) + 20px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(18px);
+  transition: opacity .22s ease, transform .22s ease;
+}
 
-/* ── CHECKLIST ── */
-.cl-wrap{padding:0 16px;max-width:480px;margin:0 auto}
-.cl-grp-lbl{font-family:var(--font-d);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);margin:10px 0 6px 3px}
-.task{display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--border-light);border-radius:var(--r);padding:13px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .2s,background .2s,transform .12s;-webkit-tap-highlight-color:transparent;min-height:58px;box-shadow:var(--sh)}
-.task:active{transform:scale(.985)}
-.task.done{background:var(--success-soft);border-color:#6EE7B7}
-.task-cb{width:28px;height:28px;border-radius:50%;border:2.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:14px;font-weight:700}
-.task.done .task-cb{background:var(--success);border-color:var(--success);color:#fff}
-.task.req:not(.done) .task-cb{border-color:var(--primary-light)}
-.task-body{flex:1;min-width:0}
-.task-name{font-family:var(--font-b);font-size:15px;font-weight:600;color:var(--text-1);line-height:1.3}
-.task.done .task-name{color:var(--success);text-decoration:line-through;text-decoration-color:rgba(5,150,105,.4)}
-.task-time{font-size:11px;color:var(--success);font-weight:600;margin-top:2px}
-.req-dot{width:6px;height:6px;border-radius:50%;background:var(--primary-light);flex-shrink:0;margin-top:2px}
-.task.done .req-dot{background:var(--success)}
-.temp-wrap{display:flex;gap:8px;margin-top:7px}
-.temp-col{flex:1;text-align:center}
-.temp-inp{width:100%;height:34px;border:1.5px solid var(--border);border-radius:8px;padding:0;font-family:var(--font-m);font-size:15px;font-weight:600;color:var(--text-1);background:var(--surface);outline:none;text-align:center;transition:border-color .2s;-moz-appearance:textfield}
-.temp-inp::-webkit-inner-spin-button,.temp-inp::-webkit-outer-spin-button{-webkit-appearance:none}
-.temp-inp:focus{border-color:var(--primary-light)}
-.temp-inp.filled{border-color:var(--success);background:var(--success-soft)}
-.temp-lbl{font-size:10px;color:var(--text-3);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
-@keyframes checkPop{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
-.popped{animation:checkPop .28s ease}
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(0);
+}
 
-/* ── PROOF ── */
-.proof-wrap{padding:0 16px;max-width:480px;margin:0 auto 14px}
-.proof-card{background:var(--surface);border:2px dashed var(--border);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;box-shadow:var(--sh)}
-.proof-card:active{transform:scale(.98)}
-.proof-card.has{border-style:solid;border-color:var(--success);background:var(--success-soft)}
-.proof-icon{font-size:30px;margin-bottom:6px}
-.proof-title{font-family:var(--font-d);font-size:14px;font-weight:800;color:var(--text-2);margin-bottom:3px}
-.proof-sub{font-size:12px;color:var(--text-3)}
-.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.thumb-w{position:relative}
-.thumb{width:70px;height:70px;border-radius:10px;object-fit:cover;border:2.5px solid var(--success);display:block}
-.thumb-rm{position:absolute;top:-6px;right:-6px;width:20px;height:20px;background:var(--danger);color:#fff;border:none;border-radius:50%;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700}
+/* Bottom Navigation */
+.bottom-nav {
+  height: calc(var(--nav-h) + var(--safe-b));
+  padding-bottom: var(--safe-b);
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  box-shadow: 0 -4px 20px rgba(26,24,21,0.06);
+  flex-shrink: 0;
+  z-index: 200;
+}
 
-/* ── FINISH SECTION ── */
-.finish-wrap{padding:0 16px;max-width:480px;margin:8px auto 0}
-.reqs-card{background:var(--surface);border:1.5px solid var(--border-light);border-radius:var(--r);padding:13px 16px;margin-bottom:12px;box-shadow:var(--sh)}
-.reqs-title{font-size:12px;font-weight:700;color:var(--text-2);margin-bottom:8px;display:flex;align-items:center;gap:5px}
-.req-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-3);margin-bottom:5px}
-.req-item.met{color:var(--success)}
-.btn-finish{width:100%;height:56px;background:linear-gradient(135deg,#047857,#10B981);color:#fff;border:none;border-radius:var(--r-lg);font-family:var(--font-d);font-size:17px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .15s,opacity .2s;box-shadow:0 8px 24px rgba(5,150,105,.28);letter-spacing:.02em}
-.btn-finish:active{transform:scale(.97)}
-.btn-finish:disabled{background:linear-gradient(135deg,#9CA3AF,#D1D5DB);box-shadow:none;cursor:not-allowed;opacity:.8}
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 4px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--text-4);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  transition: color .2s;
+}
 
-/* ════════════ TIMETABLE SCREEN ════════════ */
-.pg-hdr{background:var(--surface);padding:calc(var(--safe-t) + 18px) 16px 14px;border-bottom:1px solid var(--border-light)}
-.pg-title{font-family:var(--font-d);font-size:26px;font-weight:900;color:var(--text-1);margin-bottom:2px}
-.pg-sub{font-size:13px;color:var(--text-3)}
-.tt-card{background:var(--surface);border:1.5px solid var(--border-light);border-radius:var(--r);overflow:hidden;margin-bottom:14px;box-shadow:var(--sh)}
-.tt-card-hdr{background:var(--primary-soft);padding:11px 16px;display:flex;align-items:center;justify-content:space-between}
-.tt-card-title{font-family:var(--font-d);font-size:12px;font-weight:900;color:var(--primary);text-transform:uppercase;letter-spacing:.08em}
-.btn-clear{font-size:12px;color:var(--danger);background:none;border:none;cursor:pointer;font-weight:700}
-.tt-lines{padding:14px}
-.tt-line{font-family:var(--font-m);font-size:12px;color:var(--text-1);padding:7px 10px;background:var(--surface-alt);border-radius:8px;margin-bottom:5px;word-break:break-all;line-height:1.5}
-.tt-line.hi{background:var(--primary-soft);color:var(--primary);font-weight:700}
-.tt-empty{text-align:center;padding:28px 16px;color:var(--text-4);font-size:14px;line-height:1.6}
-.btn-upload{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:50px;background:var(--primary);color:#fff;border:none;border-radius:var(--r);font-family:var(--font-d);font-size:15px;font-weight:800;cursor:pointer;margin-bottom:10px;transition:transform .15s;letter-spacing:.02em;box-shadow:0 4px 16px rgba(26,95,212,.25)}
-.btn-upload:active{transform:scale(.97)}
-.btn-manual{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:46px;background:transparent;color:var(--primary);border:2px solid var(--primary);border-radius:var(--r);font-family:var(--font-d);font-size:14px;font-weight:800;cursor:pointer;transition:transform .15s,background .15s;margin-bottom:14px;letter-spacing:.02em}
-.btn-manual:active{background:var(--primary-soft);transform:scale(.97)}
-.manual-ta{width:100%;min-height:100px;border:1.5px solid var(--border);border-radius:var(--r);padding:12px;font-family:var(--font-m);font-size:13px;color:var(--text-1);outline:none;resize:vertical;background:var(--surface-alt);transition:border-color .2s;line-height:1.6;margin-bottom:10px}
-.manual-ta:focus{border-color:var(--primary);background:#fff}
-.ocr-loading{display:flex;flex-direction:column;align-items:center;gap:11px;padding:28px;display:none}
-.ocr-spin{width:38px;height:38px;border:3px solid var(--primary-soft);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.ocr-txt{font-size:13px;font-weight:700;color:var(--primary)}
-.ocr-bar{width:180px;height:4px;background:var(--primary-soft);border-radius:2px;overflow:hidden}
-.ocr-fill{height:100%;background:var(--primary);border-radius:2px;transition:width .3s;width:0}
-.parsed-shift{display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--border-light);border-radius:var(--r);padding:13px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .2s,transform .12s;box-shadow:var(--sh)}
-.parsed-shift:active{transform:scale(.98);border-color:var(--primary)}
-.ps-icon{width:28px;height:28px;border-radius:50%;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.ps-time{font-family:var(--font-d);font-size:15px;font-weight:800;color:var(--text-1)}
-.ps-note{font-size:11px;color:var(--text-3);margin-top:1px}
-.ps-set{font-size:12px;font-weight:800;color:var(--primary)}
+.nav-btn.active {
+  color: var(--primary);
+}
 
-/* ════════════ HISTORY ════════════ */
-.hist-item{background:var(--surface);border:1.5px solid var(--border-light);border-radius:var(--r);padding:15px 16px;margin:8px 16px;cursor:pointer;transition:transform .15s,border-color .15s;max-width:calc(480px - 32px);margin-left:auto;margin-right:auto;box-shadow:var(--sh)}
-.hist-item:active{transform:scale(.98);border-color:var(--primary)}
-.hist-date{font-family:var(--font-d);font-size:15px;font-weight:900;color:var(--text-1);margin-bottom:3px}
-.hist-meta{font-size:13px;color:var(--text-3);display:flex;gap:12px;flex-wrap:wrap}
-.hist-badge{display:inline-flex;align-items:center;gap:3px;background:var(--success-soft);color:var(--success);border-radius:20px;padding:2px 9px;font-size:11px;font-weight:800}
-.hist-empty{text-align:center;padding:60px 32px}
-.hist-empty-ico{font-size:48px;margin-bottom:12px}
+.nav-icon {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background .2s, transform .15s;
+  font-size: 20px;
+}
 
-/* ════════════ SUMMARY ════════════ */
-.sum-wrap{padding:16px 16px 0;max-width:480px;margin:0 auto}
-.sum-hero{background:linear-gradient(140deg,#0D47A1,#1A6ED8 60%,#2B9FFF);border-radius:var(--r-xl);padding:28px 24px;color:#fff;text-align:center;margin-bottom:14px;box-shadow:var(--sh-primary)}
-.sum-tick{font-size:52px;margin-bottom:8px}
-.sum-title{font-family:var(--font-d);font-size:24px;font-weight:900;margin-bottom:4px}
-.sum-sub{opacity:.8;font-size:14px}
-.sum-card{background:var(--surface);border:1.5px solid var(--border-light);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
-.sum-card-title{font-family:var(--font-d);font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);margin-bottom:10px}
-.sum-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;font-size:14px}
-.sum-lbl{color:var(--text-3)}
-.sum-val{font-weight:700;color:var(--text-1);text-align:right;max-width:62%}
-.sum-task{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-light);font-size:13px}
-.sum-task:last-child{border-bottom:none}
-.btn-share{width:100%;height:52px;background:linear-gradient(135deg,#047857,#10B981);color:#fff;border:none;border-radius:var(--r-lg);font-family:var(--font-d);font-size:15px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;box-shadow:0 6px 20px rgba(5,150,105,.25);transition:transform .15s;letter-spacing:.02em}
-.btn-share:active{transform:scale(.97)}
-.btn-newshift{width:100%;height:48px;background:var(--surface-alt);color:var(--text-2);border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font-d);font-size:14px;font-weight:800;cursor:pointer;transition:transform .15s}
-.btn-newshift:active{transform:scale(.97)}
+.nav-btn.active .nav-icon {
+  background: var(--primary-soft);
+  transform: translateY(-1px);
+}
 
-/* ── ALARM BANNER ── */
-.alarm{position:fixed;top:0;left:0;right:0;z-index:999;background:linear-gradient(135deg,#059669,#10B981);color:#fff;padding:18px 20px;padding-top:calc(18px + var(--safe-t));text-align:center;transform:translateY(-130%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 32px rgba(5,150,105,.45)}
-.alarm.show{transform:translateY(0)}
-.alarm-title{font-family:var(--font-d);font-size:18px;font-weight:900}
-.alarm-sub{font-size:13px;opacity:.85;margin-top:2px}
+/* ── SHIFT WIDGET ── */
+.shift-widget {
+  margin: 16px;
+  background: linear-gradient(140deg, #0D4A3A 0%, #1A6B5A 55%, #2D9A7A 100%);
+  border-radius: var(--r-xl);
+  padding: 22px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(26,107,90,0.3);
+}
+
+.shift-widget::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 50%;
+}
+
+.shift-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.shift-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  opacity: 0.8;
+}
+
+.shift-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.18);
+}
+
+.shift-badge.live {
+  background: rgba(5,150,105,0.8);
+}
+
+.shift-badge.done {
+  background: rgba(16,185,129,0.8);
+}
+
+.shift-timer {
+  font-family: var(--font-mono);
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.shift-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.shift-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.16);
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.shift-actions {
+  display: flex;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.btn {
+  flex: 1;
+  height: 48px;
+  border: none;
+  border-radius: var(--r);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .15s, opacity .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+.btn-start {
+  background: #fff;
+  color: var(--primary);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.btn-start.active-shift {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.4);
+}
+
+.btn-end {
+  background: #DC2626;
+  color: #fff;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-restart {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.4);
+  margin-top: 8px;
+}
+
+/* ── COMPANION INPUT ── */
+.companion-row {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.companion-input {
+  flex: 1;
+  height: 40px;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+  padding: 0 12px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+}
+
+.companion-input::placeholder {
+  color: rgba(255,255,255,0.5);
+}
+
+/* ── SALES ENTRY CARDS ── */
+.section-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--primary);
+  padding: 16px 16px 8px;
+}
+
+.entry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 8px 16px;
+}
+
+.entry-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--r);
+  padding: 14px;
+  box-shadow: var(--sh);
+}
+
+.entry-card label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.entry-card input {
+  background: transparent;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-1);
+  width: 100%;
+  outline: none;
+}
+
+.entry-card .calc-row {
+  font-size: 11px;
+  color: var(--text-3);
+  font-weight: 600;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+}
+
+.save-btn {
+  margin: 16px;
+  width: calc(100% - 32px);
+  height: 52px;
+  background: linear-gradient(135deg, #1A6B5A, #2D8A75);
+  color: #fff;
+  border: none;
+  border-radius: var(--r);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(26,107,90,0.25);
+  transition: transform .15s;
+}
+
+.save-btn:active {
+  transform: scale(0.97);
+}
+
+/* ── KPI CARDS ── */
+.kpi-row {
+  display: flex;
+  gap: 10px;
+  padding: 8px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.kpi-row::-webkit-scrollbar {
+  display: none;
+}
+
+.kpi-chip {
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  min-width: 100px;
+  box-shadow: var(--sh);
+}
+
+.kpi-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.kpi-val {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  margin-top: 2px;
+  color: var(--text-1);
+}
+
+/* ── CALENDAR ── */
+.calendar-wrap {
+  padding: 0 16px;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.calendar-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text-1);
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.calendar-nav-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1.5px solid var(--border-light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: transform .15s;
+}
+
+.calendar-nav-btn:active {
+  transform: scale(0.9);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.calendar-day-header {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-3);
+  text-transform: uppercase;
+  padding: 4px 0;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  border: 1.5px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .15s;
+  position: relative;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.calendar-day:hover {
+  border-color: var(--primary-light);
+}
+
+.calendar-day.today {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(26,107,90,0.3);
+}
+
+.calendar-day.selected {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-soft);
+}
+
+.calendar-day .hours-badge {
+  font-size: 9px;
+  font-weight: 700;
+  margin-top: 2px;
+  padding: 1px 5px;
+  border-radius: 8px;
+}
+
+.calendar-day .hours-badge.green {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.calendar-day .hours-badge.red {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.calendar-day .rota-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary-light);
+}
+
+/* ── WEEK SUMMARY ── */
+.week-summary {
+  background: var(--surface);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  margin: 12px 16px;
+  box-shadow: var(--sh);
+}
+
+.week-summary-title {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.week-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 4px;
+}
+
+.week-summary-row .remaining {
+  color: var(--primary);
+  font-family: var(--font-mono);
+}
+
+/* ── OCR SECTION ── */
+.ocr-section {
+  margin: 12px 16px;
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: var(--r);
+  padding: 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s;
+  box-shadow: var(--sh);
+}
+
+.ocr-section:hover {
+  border-color: var(--primary);
+}
+
+.ocr-section.has-data {
+  border-style: solid;
+  border-color: var(--success);
+  background: var(--success-soft);
+}
+
+.ocr-title {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
+  margin-bottom: 4px;
+}
+
+.ocr-sub {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+/* ── HISTORY LIST ── */
+.history-item {
+  background: var(--surface);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  margin: 8px 16px;
+  cursor: pointer;
+  box-shadow: var(--sh);
+  transition: transform .15s;
+}
+
+.history-item:active {
+  transform: scale(0.98);
+}
+
+.history-date {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--text-1);
+  margin-bottom: 4px;
+}
+
+.history-meta {
+  font-size: 13px;
+  color: var(--text-3);
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
 
 /* ── TOAST ── */
-.toast{position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 14px);left:50%;transform:translateX(-50%) translateY(16px);background:var(--text-1);color:#fff;padding:10px 20px;border-radius:22px;font-size:13px;font-weight:600;opacity:0;transition:opacity .25s,transform .25s;z-index:500;white-space:nowrap;pointer-events:none;max-width:90vw;text-align:center}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: var(--success);
+  color: #fff;
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 700;
+  z-index: 999;
+  opacity: 0;
+  transition: all .3s;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── SETTINGS ── */
+.settings-group {
+  margin: 12px 16px;
+  background: var(--surface);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--r);
+  overflow: hidden;
+  box-shadow: var(--sh);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+}
+
+.settings-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.settings-sub {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+/* ── OCR LOADING ── */
+.ocr-loading {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+}
+
+.ocr-spin {
+  width: 38px;
+  height: 38px;
+  border: 3px solid var(--primary-soft);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.ocr-progress-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.ocr-bar {
+  width: 180px;
+  height: 4px;
+  background: var(--primary-soft);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.ocr-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 2px;
+  transition: width .3s;
+  width: 0;
+}
+
+/* ── ROTA PARSED ITEMS ── */
+.parsed-rota-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  margin: 6px 16px;
+  cursor: pointer;
+  box-shadow: var(--sh);
+  transition: transform .15s;
+}
+
+.parsed-rota-item:active {
+  transform: scale(0.98);
+}
+
+.parsed-rota-name {
+  font-weight: 700;
+  color: var(--text-1);
+  flex: 1;
+}
+
+.parsed-rota-time {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ── RESPONSIVE ── */
+@media (min-width: 480px) {
+  .entry-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
 </style>
 </head>
 <body>
+
 <div id="app">
+  <!-- Status Bar -->
+  <div class="status-bar"></div>
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="topbar-title">Tracker Made Easy</div>
+    <div class="store-badge" id="storeBadge">BOOTS DXB</div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">✓ Saved!</div>
+
+  <!-- Screens Container -->
   <div class="screens">
 
-    <!-- ━━━━━━━━━━━━━━━━ HOME ━━━━━━━━━━━━━━━━ -->
-    <div id="scr-home" class="screen active">
-      <div class="home-hdr">
-        <div>
-          <div class="hdr-day" id="hdr-day">TUESDAY</div>
-          <div class="hdr-date" id="hdr-date">24 February 2026</div>
-        </div>
-        <button class="bell-btn" id="bell-btn" title="Shift alarm">🔔</button>
-      </div>
-
-      <!-- BIG SHIFT WIDGET -->
+    <!-- ━━━ HOME SCREEN ━━━ -->
+    <div id="screen-home" class="screen active">
+      
+      <!-- Shift Widget -->
       <div class="shift-widget">
-        <div class="sw-top">
-          <span class="sw-label">TODAY'S SHIFT</span>
-          <span class="sw-badge" id="sw-badge">NOT STARTED</span>
+        <div class="shift-header">
+          <span class="shift-label">⏱️ Today's Shift</span>
+          <span class="shift-badge" id="shiftBadge">NOT STARTED</span>
         </div>
-        <div class="sw-time" id="sw-time">— : —</div>
-        <div class="sw-type" id="sw-type">Set your shift times below ↓</div>
-        <div class="sw-meta">
-          <div class="sw-chip"><span>👤</span><span id="sw-staff">No staff set</span></div>
-          <div class="sw-chip" id="sw-cd-chip"><span>⏱</span><span id="sw-countdown">—</span></div>
+        <div class="shift-timer" id="liveTimer">00:00:00</div>
+        <div class="shift-meta">
+          <div class="shift-chip"><span>🕐</span><span id="shiftInLabel">In: --:--</span></div>
+          <div class="shift-chip"><span>🕐</span><span id="shiftOutLabel">Out: --:--</span></div>
+          <div class="shift-chip"><span>⏳</span><span id="shiftTotal">0h 0m</span></div>
         </div>
-        <button class="btn-start" id="btn-start" onclick="handleStart()">
-          <span id="btn-start-ico">▶</span>
-          <span id="btn-start-txt">START SHIFT</span>
-        </button>
+        <div class="companion-row">
+          <input type="text" class="companion-input" id="companionInput" placeholder="👤 Staff companion name (optional)">
+        </div>
+        <div class="shift-actions">
+          <button class="btn btn-start" id="btnStartShift" onclick="handleStartShift()">▶ START</button>
+          <button class="btn btn-end" id="btnEndShift" onclick="endShift()" disabled>⏹ END</button>
+        </div>
+        <button class="btn btn-restart" id="btnRestartManual" style="display:none;" onclick="restartOrManual()">🔄 Restart / ✏️ Enter Time Manually</button>
       </div>
 
-      <!-- SHIFT TIMES -->
-      <div class="time-row">
-        <div class="time-box">
-          <div class="time-box-label">Shift Start</div>
-          <input type="time" class="time-input" id="in-start" onchange="onTimeChange()">
+      <!-- Sales Entry -->
+      <div class="section-label">💰 Quick Sales Entry</div>
+      <div class="entry-grid">
+        <div class="entry-card">
+          <label>Sale (AED)</label>
+          <input type="number" id="inp-sale" placeholder="0" oninput="autoCalcATV()">
         </div>
-        <div class="time-box">
-          <div class="time-box-label">Shift End</div>
-          <input type="time" class="time-input" id="in-end" onchange="onTimeChange()">
+        <div class="entry-card">
+          <label>No7 Sales</label>
+          <input type="number" id="inp-no7" placeholder="0">
         </div>
+        <div class="entry-card">
+          <label>Transactions</label>
+          <input type="number" id="inp-trn" placeholder="0" oninput="autoCalcATV()">
+          <div class="calc-row" id="calc-atv">ATV: —</div>
+        </div>
+        <div class="entry-card">
+          <label>Footfall</label>
+          <input type="number" id="inp-footfall" placeholder="0">
+        </div>
+      </div>
+      <button class="save-btn" onclick="saveSales()">💾 Save Sales Data</button>
+
+      <!-- KPI Row -->
+      <div class="section-label">📊 Today's KPIs</div>
+      <div class="kpi-row" id="kpiRow">
+        <div class="kpi-chip"><div class="kpi-name">Sales</div><div class="kpi-val">AED 0</div></div>
+        <div class="kpi-chip"><div class="kpi-name">No7%</div><div class="kpi-val">—</div></div>
+        <div class="kpi-chip"><div class="kpi-name">ATV</div><div class="kpi-val">—</div></div>
+        <div class="kpi-chip"><div class="kpi-name">Shift</div><div class="kpi-val">—</div></div>
       </div>
 
-      <!-- STAFF -->
-      <div class="staff-card">
-        <div class="card-label">👥 Staff on Shift</div>
-        <div class="staff-tags" id="staff-tags"></div>
-        <div class="staff-row">
-          <input type="text" class="staff-field" id="staff-field" placeholder="Add name & press Enter" onkeydown="staffKey(event)">
-          <button class="btn-add" onclick="addStaff()">+</button>
-        </div>
+      <!-- Rota OCR Upload -->
+      <div class="section-label">📋 Weekly Rota</div>
+      <div class="ocr-section" id="ocrSection" onclick="pickRotaImage()">
+        <div class="ocr-title">📷 Upload Rota Image</div>
+        <div class="ocr-sub">OCR will extract your shift times automatically</div>
+      </div>
+      <input type="file" id="rotaInput" accept="image/*" style="display:none;" onchange="onRotaUpload(event)">
+      
+      <div class="ocr-loading" id="ocrLoading">
+        <div class="ocr-spin"></div>
+        <div class="ocr-progress-text" id="ocrProgressText">Scanning rota...</div>
+        <div class="ocr-bar"><div class="ocr-fill" id="ocrFill"></div></div>
       </div>
 
-      <!-- NOTES -->
-      <div class="notes-card">
-        <div class="notes-lbl">⚡ Task of the Day / Reminders</div>
-        <textarea class="notes-ta" id="notes-ta" placeholder="Special tasks, handover notes, reminders..." rows="2"></textarea>
-      </div>
-
-      <!-- CHECKLIST -->
-      <div class="sec-hdr">
-        <div class="sec-title"><span class="sec-dot"></span>SHIFT CHECKLIST</div>
-        <div class="sec-badge" id="cl-prog">0/9</div>
-      </div>
-      <div class="cl-wrap" id="cl-container"></div>
-
-      <!-- PROOF -->
-      <div class="sec-hdr" style="margin-top:6px">
-        <div class="sec-title"><span class="sec-dot"></span>PROOF / ATTACHMENTS</div>
-        <div class="sec-badge" id="proof-badge">REQUIRED</div>
-      </div>
-      <div class="proof-wrap">
-        <div class="proof-card" id="proof-card" onclick="pickPhoto()">
-          <div class="proof-icon" id="proof-ico">📷</div>
-          <div class="proof-title" id="proof-ttl">Upload Proof Photo</div>
-          <div class="proof-sub" id="proof-sub">Tap to attach handover sheet / key sign / temp chart</div>
-        </div>
-        <div class="thumbs" id="thumbs"></div>
-        <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="onPhotos(event)">
-      </div>
-
-      <!-- FINISH -->
-      <div class="finish-wrap">
-        <div class="reqs-card" id="reqs-card">
-          <div class="reqs-title">🔒 Finish Shift requires:</div>
-          <div class="req-item" id="r1"><span>○</span>Shift started</div>
-          <div class="req-item" id="r2"><span>○</span>Staff name(s) entered</div>
-          <div class="req-item" id="r3"><span>○</span>All required tasks completed</div>
-          <div class="req-item" id="r4"><span>○</span>Proof photo attached</div>
-        </div>
-        <button class="btn-finish" id="btn-finish" onclick="finishShift()" disabled>
-          ✓ FINISH SHIFT &amp; GENERATE SUMMARY
-        </button>
-      </div>
-      <div style="height:20px"></div>
+      <div id="parsedRotaList"></div>
     </div>
-    <!-- END HOME -->
 
-    <!-- ━━━━━━━━━━━━━━━━ TIMETABLE ━━━━━━━━━━━━━━━━ -->
-    <div id="scr-timetable" class="screen">
-      <div class="pg-hdr">
-        <div class="pg-title">📋 Timetable</div>
-        <div class="pg-sub">Upload rota image or enter manually</div>
-      </div>
-      <div style="padding:16px 16px 0;max-width:480px;margin:0 auto">
-        <div class="tt-card">
-          <div class="tt-card-hdr">
-            <span class="tt-card-title">📅 Current Rota</span>
-            <button class="btn-clear" onclick="clearTT()">Clear all</button>
-          </div>
-          <div class="tt-lines" id="tt-lines">
-            <div class="tt-empty">No timetable loaded.<br>Upload an image or type below.</div>
+    <!-- ━━━ HISTORY SCREEN ━━━ -->
+    <div id="screen-history" class="screen">
+      <div class="section-label">📅 Shift History Calendar</div>
+      
+      <!-- Calendar -->
+      <div class="calendar-wrap">
+        <div class="calendar-header">
+          <div class="calendar-title" id="calendarMonthTitle">May 2026</div>
+          <div class="calendar-nav">
+            <button class="calendar-nav-btn" onclick="navigateCalendar(-1)">◀</button>
+            <button class="calendar-nav-btn" onclick="navigateCalendar(1)">▶</button>
           </div>
         </div>
-
-        <div class="ocr-loading" id="ocr-wrap">
-          <div class="ocr-spin"></div>
-          <div class="ocr-txt" id="ocr-txt">Scanning image...</div>
-          <div class="ocr-bar"><div class="ocr-fill" id="ocr-fill"></div></div>
+        <div class="calendar-grid" id="calendarDayHeaders">
+          <div class="calendar-day-header">Fri</div>
+          <div class="calendar-day-header">Sat</div>
+          <div class="calendar-day-header">Sun</div>
+          <div class="calendar-day-header">Mon</div>
+          <div class="calendar-day-header">Tue</div>
+          <div class="calendar-day-header">Wed</div>
+          <div class="calendar-day-header">Thu</div>
         </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </div>
 
-        <button class="btn-upload" onclick="pickTT()">📷 Upload Rota Image (Auto-Scan OCR)</button>
-        <input type="file" id="tt-input" accept="image/*" style="display:none" onchange="onTTUpload(event)">
-        <button class="btn-manual" onclick="toggleManual()">✏️ Manual Entry</button>
-
-        <div id="manual-area" style="display:none">
-          <textarea class="manual-ta" id="manual-ta" placeholder="Paste or type your rota:&#10;&#10;09:00-13:00 SARAH&#10;13:00-17:30 AHMED&#10;17:30-22:00 EMMA HANDOVER"></textarea>
-          <button class="btn-upload" onclick="saveManual()">✓ Save Timetable</button>
+      <!-- Week Summary -->
+      <div class="week-summary" id="weekSummary">
+        <div class="week-summary-title">📊 Week 19 Summary</div>
+        <div class="week-summary-row">
+          <span>Total Hours</span>
+          <span class="remaining" id="weekTotalHours">0 / 48</span>
         </div>
-
-        <div style="margin-top:16px" id="parsed-wrap">
-          <div class="sec-title" style="margin-bottom:10px"><span class="sec-dot"></span>TAP TO SET AS TODAY'S SHIFT</div>
-          <div id="parsed-list"></div>
+        <div class="week-summary-row">
+          <span>Remaining</span>
+          <span class="remaining" id="weekRemaining">48h</span>
         </div>
       </div>
-      <div style="height:20px"></div>
+
+      <!-- Selected Day Details -->
+      <div class="section-label">📋 Selected Day Details</div>
+      <div id="dayDetails" style="padding: 0 16px;">
+        <p style="color: var(--text-3); text-align: center; padding: 20px;">Select a date to view details</p>
+      </div>
+
+      <!-- All History -->
+      <div class="section-label">📂 All Shift Records</div>
+      <div id="historyList"></div>
     </div>
 
-    <!-- ━━━━━━━━━━━━━━━━ HISTORY ━━━━━━━━━━━━━━━━ -->
-    <div id="scr-history" class="screen">
-      <div class="pg-hdr">
-        <div class="pg-title">📂 Shift History</div>
-        <div class="pg-sub">All completed shifts</div>
+    <!-- ━━━ SETTINGS SCREEN ━━━ -->
+    <div id="screen-settings" class="screen">
+      <div class="section-label">⚙️ Settings</div>
+      
+      <div class="settings-group">
+        <div class="settings-row" onclick="changeStoreName()">
+          <div>
+            <div class="settings-label">Store Name</div>
+            <div class="settings-sub" id="settingsStoreName">BOOTS DXB</div>
+          </div>
+          <span style="font-size: 18px;">›</span>
+        </div>
+        
+        <div class="settings-row" onclick="forceCloudSync()">
+          <div>
+            <div class="settings-label">☁️ Cloud Sync</div>
+            <div class="settings-sub">Manually sync all data</div>
+          </div>
+          <span style="font-size: 18px;">›</span>
+        </div>
+
+        <div class="settings-row" onclick="clearAllData()">
+          <div>
+            <div class="settings-label" style="color: var(--danger);">🗑️ Clear All Data</div>
+            <div class="settings-sub">Reset everything</div>
+          </div>
+          <span style="font-size: 18px;">›</span>
+        </div>
       </div>
-      <div id="hist-list" style="padding-top:8px">
-        <div class="hist-empty">
-          <div class="hist-empty-ico">📋</div>
-          <div style="font-family:var(--font-d);font-size:16px;font-weight:800;color:var(--text-2);margin-bottom:4px">No shifts yet</div>
-          <div style="font-size:13px;color:var(--text-4)">Completed shifts appear here</div>
+
+      <div class="section-label">📱 App Info</div>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Version</div>
+            <div class="settings-sub">Tracker v4.0</div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Created by</div>
+            <div class="settings-sub">Vysakh - 331356</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- ━━━━━━━━━━━━━━━━ SUMMARY ━━━━━━━━━━━━━━━━ -->
-    <div id="scr-summary" class="screen">
-      <div id="sum-content" class="sum-wrap"></div>
-    </div>
+  </div>
 
-  </div><!-- /screens -->
-
-  <!-- BOTTOM NAV -->
+  <!-- Bottom Navigation -->
   <nav class="bottom-nav">
-    <button class="nav-btn active" id="nav-home" onclick="go('home')">
-      <div class="nav-icon">🏠</div><span>Home</span>
+    <button class="nav-btn active" id="nav-home" onclick="showScreen('home')">
+      <div class="nav-icon">🏠</div>
+      <span>Home</span>
     </button>
-    <button class="nav-btn" id="nav-timetable" onclick="go('timetable')">
-      <div class="nav-icon">📋</div><span>Timetable</span>
+    <button class="nav-btn" id="nav-history" onclick="showScreen('history')">
+      <div class="nav-icon">📅</div>
+      <span>History</span>
     </button>
-    <button class="nav-btn" id="nav-history" onclick="go('history')">
-      <div class="nav-icon">📂</div><span>History</span>
+    <button class="nav-btn" id="nav-settings" onclick="showScreen('settings')">
+      <div class="nav-icon">⚙️</div>
+      <span>Settings</span>
     </button>
   </nav>
 </div>
 
-<!-- ALARM -->
-<div class="alarm" id="alarm">
-  <div class="alarm-title">⏰ Shift Starting Now!</div>
-  <div class="alarm-sub" id="alarm-sub">Time to start your shift</div>
-</div>
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
-
 <script>
-/* ═══════════════════════════════════════
-   STATE
-═══════════════════════════════════════ */
-const SK = 'bootsrx_v3';
-let S = {
-  shiftStart: null, shiftEnd: null,
-  actualStart: null, actualEnd: null,
-  active: false, finished: false,
-  alarmFired: false, alarm15Fired: false,
-  staff: [], notes: '',
-  ttText: '', ttLines: [],
-  tasks: defaultTasks(),
-  photos: [], // base64
-  history: []
+// ═══════════════════════════════════════
+// STATE MANAGEMENT
+// ═══════════════════════════════════════
+const STORAGE_KEY = 'tracker_made_easy_v4';
+let appData = {
+  settings: { storeName: 'BOOTS DXB' },
+  activeShift: null,
+  shifts: {},      // { '2026-05-02': [{ start, end, duration, companion }] }
+  sales: {},       // { '2026-05-02': { sale, no7, trn, footfall, atv } }
+  rotaData: {},    // { '2026-05-02': { name, startTime, endTime } }
+  calendarMonth: new Date().getMonth(),
+  calendarYear: new Date().getFullYear(),
+  selectedDate: null,
 };
 
-function defaultTasks() {
-  return [
-    {id:'t1',grp:'SHIFT START',name:'Clock In',req:true,done:false,at:null,type:'check'},
-    {id:'t2',grp:'SHIFT START',name:'Temperature Chart',req:true,done:false,at:null,type:'temp',ti:'',to:''},
-    {id:'t3',grp:'SHIFT START',name:'Key Sign',req:true,done:false,at:null,type:'check'},
-    {id:'t4',grp:'SHIFT START',name:'Take Key',req:true,done:false,at:null,type:'check'},
-    {id:'t5',grp:'DURING SHIFT',name:'Fridge Temperature Check',req:false,done:false,at:null,type:'check'},
-    {id:'t6',grp:'DURING SHIFT',name:'CD Book Check',req:false,done:false,at:null,type:'check'},
-    {id:'t7',grp:'DURING SHIFT',name:'Near Expiry Check',req:false,done:false,at:null,type:'check'},
-    {id:'t8',grp:'HANDOVER',name:'E-Key Handover',req:true,done:false,at:null,type:'check'},
-    {id:'t9',grp:'HANDOVER',name:'E-Cash Handover',req:true,done:false,at:null,type:'check'},
-    {id:'t10',grp:'HANDOVER',name:'Sales Update in Tracker',req:true,done:false,at:null,type:'check'},
-    {id:'t11',grp:'HANDOVER',name:'Waste Disposed',req:false,done:false,at:null,type:'check'},
-    {id:'t12',grp:'HANDOVER',name:'Dispensary Cleared',req:false,done:false,at:null,type:'check'},
-  ];
-}
+let shiftInterval = null;
+let currentScreen = 'home';
 
-function save() {
-  try { localStorage.setItem(SK, JSON.stringify(S)); } catch(e) {
+// ═══════════════════════════════════════
+// DATA PERSISTENCE
+// ═══════════════════════════════════════
+function loadData() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
     try {
-      const s2 = {...S, photos:S.photos.map(()=>'[photo]')};
-      localStorage.setItem(SK, JSON.stringify(s2));
-    } catch(e2) {}
-  }
-}
-
-function load() {
-  try {
-    const raw = localStorage.getItem(SK);
-    if (raw) { const p = JSON.parse(raw); S = {...S,...p}; if (!S.tasks?.length) S.tasks = defaultTasks(); if (!S.history) S.history = []; }
-  } catch(e) {}
-}
-
-/* ═══════════════════════════════════════
-   NAVIGATION
-═══════════════════════════════════════ */
-let curScr = 'home';
-function go(scr) {
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));
-  document.getElementById('scr-'+scr).classList.add('active');
-  const nb = document.getElementById('nav-'+scr);
-  if (nb) nb.classList.add('active');
-  curScr = scr;
-  if (scr==='history') renderHistory();
-}
-
-/* ═══════════════════════════════════════
-   TIME UTILS
-═══════════════════════════════════════ */
-const DAYS = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-function fmtDate(d) { return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`; }
-function fmtTime(d) { return d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); }
-function toMins(s) { if(!s)return null; const[h,m]=s.split(':').map(Number); return h*60+m; }
-
-/* ═══════════════════════════════════════
-   HOME RENDER
-═══════════════════════════════════════ */
-function renderHeader() {
-  const n = new Date();
-  document.getElementById('hdr-day').textContent = DAYS[n.getDay()];
-  document.getElementById('hdr-date').textContent = fmtDate(n);
-}
-
-function renderWidget() {
-  const badge = document.getElementById('sw-badge');
-  const timeEl = document.getElementById('sw-time');
-  const typeEl = document.getElementById('sw-type');
-  const btn = document.getElementById('btn-start');
-  const btnIco = document.getElementById('btn-start-ico');
-  const btnTxt = document.getElementById('btn-start-txt');
-
-  if (S.shiftStart && S.shiftEnd) {
-    timeEl.textContent = `${S.shiftStart} → ${S.shiftEnd}`;
-    timeEl.classList.remove('empty');
-    typeEl.textContent = shiftLabel(S.shiftStart);
-  } else if (S.shiftStart) {
-    timeEl.textContent = `${S.shiftStart} → --:--`;
-    timeEl.classList.remove('empty');
-    typeEl.textContent = shiftLabel(S.shiftStart);
-  } else {
-    timeEl.textContent = '— : —';
-    timeEl.classList.add('empty');
-    typeEl.textContent = 'Set your shift times below ↓';
-  }
-
-  if (S.finished) {
-    badge.textContent = '✓ COMPLETED'; badge.className = 'sw-badge done';
-    btnIco.textContent = '✓'; btnTxt.textContent = 'VIEW SUMMARY';
-    btn.className = 'btn-start done-mode';
-  } else if (S.active) {
-    badge.textContent = '● ACTIVE'; badge.className = 'sw-badge live';
-    const el = S.actualStart ? Math.floor((Date.now()-new Date(S.actualStart))/60000) : 0;
-    btnIco.textContent = '⏳'; btnTxt.textContent = `ON SHIFT  ${el}m elapsed`;
-    btn.className = 'btn-start live';
-  } else {
-    badge.textContent = 'NOT STARTED'; badge.className = 'sw-badge';
-    btnIco.textContent = '▶'; btnTxt.textContent = 'START SHIFT';
-    btn.className = 'btn-start';
-  }
-
-  document.getElementById('sw-staff').textContent = S.staff.length ? S.staff.join(', ') : 'No staff set';
-
-  if (S.shiftStart) {
-    document.getElementById('in-start').value = S.shiftStart;
-  }
-  if (S.shiftEnd) {
-    document.getElementById('in-end').value = S.shiftEnd;
-  }
-}
-
-function shiftLabel(t) {
-  const m = toMins(t);
-  if (!m) return 'Shift';
-  if (m < 600) return '🌅 Morning Shift';
-  if (m < 780) return '☀️ Late Morning Shift';
-  if (m < 1020) return '🌤 Afternoon Shift';
-  if (m < 1200) return '🌆 Evening Shift';
-  return '🌙 Night Shift';
-}
-
-function renderStaff() {
-  document.getElementById('staff-tags').innerHTML = S.staff.map((n,i)=>`
-    <div class="staff-tag">${esc(n)}<button class="tag-x" onclick="rmStaff(${i})">×</button></div>`).join('');
-}
-
-function renderChecklist() {
-  const c = document.getElementById('cl-container');
-  const groups = [...new Set(S.tasks.map(t=>t.grp))];
-  let html = '';
-  groups.forEach(g => {
-    html += `<div class="cl-grp-lbl">${g}</div>`;
-    S.tasks.filter(t=>t.grp===g).forEach(t=>{ html += taskHTML(t); });
-  });
-  c.innerHTML = html;
-  updateProgress();
-}
-
-function taskHTML(t) {
-  const dc = t.done ? 'done' : '';
-  const rc = t.req ? 'req' : '';
-  let extra = '';
-  if (t.type==='temp' && !t.done) {
-    extra = `<div class="temp-wrap" onclick="event.stopPropagation()">
-      <div class="temp-col">
-        <input type="number" class="temp-inp${t.ti?' filled':''}" id="ti-${t.id}" value="${t.ti||''}" placeholder="°C" step="0.1" onchange="setTemp('${t.id}','i',this.value)" oninput="setTemp('${t.id}','i',this.value)">
-        <div class="temp-lbl">Inside</div>
-      </div>
-      <div class="temp-col">
-        <input type="number" class="temp-inp${t.to?' filled':''}" id="to-${t.id}" value="${t.to||''}" placeholder="°C" step="0.1" onchange="setTemp('${t.id}','o',this.value)" oninput="setTemp('${t.id}','o',this.value)">
-        <div class="temp-lbl">Outside</div>
-      </div>
-    </div>`;
-  }
-  return `<div class="task ${dc} ${rc}" id="ti-wrap-${t.id}" onclick="toggleTask('${t.id}')">
-    <div class="task-cb">${t.done?'✓':''}</div>
-    <div class="task-body">
-      <div class="task-name">${esc(t.name)}</div>
-      ${t.done && t.at ? `<div class="task-time">✓ ${t.at}${t.type==='temp'&&t.ti?` · ${t.ti}°C / ${t.to}°C`:''}</div>` : ''}
-      ${extra}
-    </div>
-    ${t.req ? `<div class="req-dot"></div>` : ''}
-  </div>`;
-}
-
-function updateProgress() {
-  const done = S.tasks.filter(t=>t.done).length;
-  const el = document.getElementById('cl-prog');
-  el.textContent = `${done}/${S.tasks.length}`;
-  el.className = done === S.tasks.length ? 'sec-badge ok' : 'sec-badge';
-  updateFinish();
-}
-
-function updateFinish() {
-  const r1 = S.active || S.finished;
-  const r2 = S.staff.length > 0;
-  const r3 = S.tasks.filter(t=>t.req).every(t => t.type==='temp' ? (t.ti&&t.to) : t.done);
-  const r4 = S.photos.length > 0;
-
-  setReq('r1', r1, 'Shift started');
-  setReq('r2', r2, 'Staff name(s) entered');
-  setReq('r3', r3, 'All required tasks completed');
-  setReq('r4', r4, 'Proof photo attached');
-
-  const btn = document.getElementById('btn-finish');
-  const can = r1 && r2 && r3 && r4 && !S.finished;
-  btn.disabled = !can;
-  if (S.finished) {
-    btn.textContent = '✓ SHIFT COMPLETE';
-    btn.style.background = 'linear-gradient(135deg,#6B7280,#9CA3AF)';
-    btn.style.boxShadow = 'none';
-  }
-}
-
-function setReq(id, met, label) {
-  const el = document.getElementById(id);
-  el.className = 'req-item' + (met?' met':'');
-  el.innerHTML = `<span>${met?'✓':'○'}</span>${label}`;
-}
-
-function renderProof() {
-  const card = document.getElementById('proof-card');
-  const ico = document.getElementById('proof-ico');
-  const ttl = document.getElementById('proof-ttl');
-  const sub = document.getElementById('proof-sub');
-  const badge = document.getElementById('proof-badge');
-  if (S.photos.length > 0) {
-    card.classList.add('has');
-    ico.textContent = '✅'; ttl.textContent = `${S.photos.length} photo(s) attached`; sub.textContent = 'Tap to add more';
-    badge.textContent = '✅ DONE'; badge.className = 'sec-badge ok';
-  } else {
-    card.classList.remove('has');
-    ico.textContent = '📷'; ttl.textContent = 'Upload Proof Photo'; sub.textContent = 'Tap to attach handover sheet / key sign / temp chart';
-    badge.textContent = 'REQUIRED'; badge.className = 'sec-badge';
-  }
-  document.getElementById('thumbs').innerHTML = S.photos.map((p,i)=>`
-    <div class="thumb-w">
-      <img src="${p}" class="thumb" alt="Proof ${i+1}">
-      <button class="thumb-rm" onclick="rmPhoto(${i})">×</button>
-    </div>`).join('');
-}
-
-/* ═══════════════════════════════════════
-   TASK INTERACTIONS
-═══════════════════════════════════════ */
-function toggleTask(id) {
-  if (S.finished) return;
-  const t = S.tasks.find(x=>x.id===id);
-  if (!t || t.type==='temp') {
-    if (t?.type==='temp') toast('Fill in both temperature values to complete');
-    return;
-  }
-  t.done = !t.done; t.at = t.done ? fmtTime(new Date()) : null;
-  vib([30]); save(); renderChecklist();
-  const el = document.getElementById('ti-wrap-'+id);
-  if (el) { el.classList.add('popped'); setTimeout(()=>el.classList.remove('popped'),300); }
-}
-
-function setTemp(id, field, val) {
-  const t = S.tasks.find(x=>x.id===id);
-  if (!t) return;
-  if (field==='i') t.ti = val; else t.to = val;
-  if (t.ti && t.to && !t.done) {
-    t.done = true; t.at = fmtTime(new Date());
-    vib([40]); toast(`🌡️ Temp recorded: ${t.ti}°C inside, ${t.to}°C outside`);
-    save(); renderChecklist();
-  } else { t.done = t.ti && t.to; if(!t.done) t.at=null; save(); updateProgress(); }
-}
-
-/* ═══════════════════════════════════════
-   STAFF
-═══════════════════════════════════════ */
-function addStaff() {
-  const f = document.getElementById('staff-field');
-  const n = f.value.trim(); if (!n) return;
-  if (S.staff.includes(n)) { toast('Already added'); return; }
-  S.staff.push(n); f.value = ''; save(); renderStaff(); renderWidget(); updateFinish();
-}
-function rmStaff(i) { S.staff.splice(i,1); save(); renderStaff(); renderWidget(); updateFinish(); }
-function staffKey(e) { if (e.key==='Enter') { e.preventDefault(); addStaff(); } }
-
-/* ═══════════════════════════════════════
-   SHIFT TIMES
-═══════════════════════════════════════ */
-function onTimeChange() {
-  S.shiftStart = document.getElementById('in-start').value || null;
-  S.shiftEnd = document.getElementById('in-end').value || null;
-  S.alarmFired = false; S.alarm15Fired = false;
-  save(); renderWidget();
-}
-
-/* ═══════════════════════════════════════
-   START / FINISH
-═══════════════════════════════════════ */
-function handleStart() {
-  if (S.finished) { renderSummary(S.history[0]); go('summary'); return; }
-  if (S.active) { toast('Shift already started at ' + fmtTime(new Date(S.actualStart))); return; }
-  S.active = true; S.actualStart = new Date().toISOString();
-  vib([700, 200, 700, 200, 700]); // 3 long vibrations!
-  toast('✅ Shift started — ' + fmtTime(new Date()));
-  save(); renderWidget(); updateFinish();
-}
-
-function finishShift() {
-  if (S.finished) return;
-  S.finished = true; S.actualEnd = new Date().toISOString();
-  const rec = {
-    id: Date.now()+'',
-    date: new Date().toLocaleDateString('en-GB'),
-    dateISO: new Date().toISOString(),
-    shiftStart: S.shiftStart, shiftEnd: S.shiftEnd,
-    actualStart: S.actualStart, actualEnd: S.actualEnd,
-    staff: [...S.staff], tasks: S.tasks.map(t=>({...t})),
-    photos: [...S.photos], notes: S.notes,
-    ttText: S.ttText, ttLines: [...(S.ttLines||[])]
-  };
-  S.history = [rec, ...(S.history||[])];
-  save(); vib([350,100,350]);
-  toast('✅ Shift complete! Generating summary...');
-  setTimeout(()=>{ renderSummary(rec); go('summary'); }, 700);
-}
-
-/* ═══════════════════════════════════════
-   PHOTOS
-═══════════════════════════════════════ */
-function pickPhoto() { document.getElementById('photo-input').click(); }
-function onPhotos(e) {
-  [...e.target.files].forEach(f=>{
-    const r = new FileReader();
-    r.onload = ev => { S.photos.push(ev.target.result); save(); renderProof(); updateFinish(); };
-    r.readAsDataURL(f);
-  });
-  e.target.value='';
-}
-function rmPhoto(i) { S.photos.splice(i,1); save(); renderProof(); updateFinish(); }
-
-/* ═══════════════════════════════════════
-   TIMETABLE / OCR
-═══════════════════════════════════════ */
-function pickTT() { document.getElementById('tt-input').click(); }
-async function onTTUpload(e) {
-  const file = e.target.files[0]; if(!file) return;
-  const wrap = document.getElementById('ocr-wrap');
-  const fill = document.getElementById('ocr-fill');
-  const txt = document.getElementById('ocr-txt');
-  wrap.style.display='flex';
-  try {
-    const res = await Tesseract.recognize(file, 'eng', {
-      logger: m => {
-        if (m.status==='recognizing text') {
-          fill.style.width = (m.progress*100)+'%';
-          txt.textContent = `Scanning… ${Math.round(m.progress*100)}%`;
-        }
-      }
-    });
-    processTT(res.data.text);
-    toast('✅ Timetable scanned!');
-  } catch(err) {
-    toast('OCR failed — use manual entry below');
-    document.getElementById('manual-area').style.display='block';
-  } finally {
-    wrap.style.display='none';
-    fill.style.width='0';
-    e.target.value='';
-  }
-}
-
-function toggleManual() {
-  const a = document.getElementById('manual-area');
-  a.style.display = a.style.display==='none' ? 'block' : 'none';
-  if (a.style.display==='block') document.getElementById('manual-ta').focus();
-}
-
-function saveManual() {
-  const text = document.getElementById('manual-ta').value.trim();
-  if (!text) { toast('Enter some timetable text first'); return; }
-  processTT(text);
-  document.getElementById('manual-area').style.display='none';
-  toast('✅ Timetable saved!');
-}
-
-function processTT(text) {
-  S.ttText = text;
-  S.ttLines = text.split('\n').map(l=>l.trim()).filter(l=>l.length>1);
-  save(); renderTT(); parseTTShifts();
-}
-
-function renderTT() {
-  const c = document.getElementById('tt-lines');
-  if (!S.ttLines?.length) {
-    c.innerHTML = '<div class="tt-empty">No timetable loaded.</div>'; return;
-  }
-  const todayAbbr = new Date().toLocaleDateString('en-GB',{weekday:'short'}).toUpperCase();
-  c.innerHTML = S.ttLines.map(l=>{
-    const hi = l.toUpperCase().includes(todayAbbr)||l.toUpperCase().includes('HANDOVER')||l.toUpperCase().includes('TODAY');
-    return `<div class="tt-line${hi?' hi':''}">${esc(l)}</div>`;
-  }).join('');
-}
-
-function parseTTShifts() {
-  const c = document.getElementById('parsed-list');
-  const shifts = [];
-  const pat = /(\d{1,2}[:.]\d{2})\s*[-–→to]+\s*(\d{1,2}[:.]\d{2})/gi;
-  S.ttLines.forEach(line=>{
-    let m;
-    while ((m=pat.exec(line))!==null) {
-      const s = m[1].replace('.',':'); const e = m[2].replace('.', ':');
-      const norm = t => { const p=t.split(':'); return p[0].padStart(2,'0')+':'+(p[1]||'00').padStart(2,'0'); };
-      shifts.push({ start:norm(s), end:norm(e), line });
+      const parsed = JSON.parse(saved);
+      appData = { ...appData, ...parsed };
+    } catch (e) {
+      console.error('Failed to load data:', e);
     }
-  });
-  const uniq = shifts.filter((s,i)=>shifts.findIndex(x=>x.start===s.start&&x.end===s.end)===i);
-  if (!uniq.length) {
-    c.innerHTML=`<div style="font-size:13px;color:var(--text-4);text-align:center;padding:16px">No time ranges detected. Set times manually on the Home tab.</div>`;
-    return;
-  }
-  c.innerHTML = uniq.map(s=>`
-    <div class="parsed-shift" onclick="setShift('${s.start}','${s.end}')">
-      <div class="ps-icon">⏰</div>
-      <div style="flex:1">
-        <div class="ps-time">${s.start} → ${s.end}</div>
-        <div class="ps-note">${esc(s.line.substring(0,55))}</div>
-      </div>
-      <div class="ps-set">SET</div>
-    </div>`).join('');
-}
-
-function setShift(start, end) {
-  S.shiftStart=start; S.shiftEnd=end; S.alarmFired=false; S.alarm15Fired=false;
-  document.getElementById('in-start').value=start;
-  document.getElementById('in-end').value=end;
-  save(); renderWidget(); toast(`✅ Shift set: ${start} → ${end}`);
-  setTimeout(()=>go('home'),700);
-}
-
-function clearTT() {
-  if (!confirm('Clear timetable?')) return;
-  S.ttText=''; S.ttLines=[];
-  save(); renderTT(); document.getElementById('parsed-list').innerHTML='';
-  toast('Timetable cleared');
-}
-
-/* ═══════════════════════════════════════
-   SUMMARY
-═══════════════════════════════════════ */
-function renderSummary(rec) {
-  if (!rec) return;
-  const as = rec.actualStart ? fmtTime(new Date(rec.actualStart)) : '--:--';
-  const ae = rec.actualEnd ? fmtTime(new Date(rec.actualEnd)) : '--:--';
-  let dur = '';
-  if (rec.actualStart && rec.actualEnd) {
-    const mins = Math.floor((new Date(rec.actualEnd)-new Date(rec.actualStart))/60000);
-    dur = `${Math.floor(mins/60)}h ${mins%60}m`;
-  }
-
-  const ttHtml = (rec.ttLines||[]).length ? `
-    <div class="sum-card">
-      <div class="sum-card-title">📋 Timetable</div>
-      ${(rec.ttLines||[]).slice(0,8).map(l=>`<div style="font-family:var(--font-m);font-size:12px;color:var(--text-2);background:var(--surface-alt);padding:5px 8px;border-radius:7px;margin-bottom:4px">${esc(l)}</div>`).join('')}
-    </div>` : '';
-
-  document.getElementById('sum-content').innerHTML = `
-    <div class="sum-hero">
-      <div class="sum-tick">✅</div>
-      <div class="sum-title">Shift Complete!</div>
-      <div class="sum-sub">${rec.date} · Boots Pharmacy</div>
-    </div>
-    ${ttHtml}
-    <div class="sum-card">
-      <div class="sum-card-title">⏱ Shift Times</div>
-      <div class="sum-row"><span class="sum-lbl">Scheduled</span><span class="sum-val">${rec.shiftStart||'--'} → ${rec.shiftEnd||'--'}</span></div>
-      <div class="sum-row"><span class="sum-lbl">Clocked In</span><span class="sum-val">${as}</span></div>
-      <div class="sum-row"><span class="sum-lbl">Clocked Out</span><span class="sum-val">${ae}</span></div>
-      ${dur?`<div class="sum-row"><span class="sum-lbl">Duration</span><span class="sum-val" style="color:var(--primary);font-weight:800">${dur}</span></div>`:''}
-    </div>
-    <div class="sum-card">
-      <div class="sum-card-title">👥 Staff</div>
-      <div style="font-size:15px;font-weight:700;color:var(--text-1)">${rec.staff.join(', ')||'Not recorded'}</div>
-    </div>
-    <div class="sum-card">
-      <div class="sum-card-title">✅ Completed Checklist</div>
-      ${rec.tasks.map(t=>`
-        <div class="sum-task">
-          <span style="font-size:15px">${t.done?'✅':'○'}</span>
-          <span style="flex:1;${!t.done?'color:var(--text-3)':''}">${esc(t.name)}${t.type==='temp'&&t.ti?` (${t.ti}°C / ${t.to}°C)`:''}</span>
-          ${t.at?`<span style="font-size:11px;color:var(--text-3)">${t.at}</span>`:''}
-        </div>`).join('')}
-    </div>
-    ${rec.notes?`<div class="sum-card"><div class="sum-card-title">📝 Notes</div><div style="font-size:14px;color:var(--text-2)">${esc(rec.notes)}</div></div>`:''}
-    ${rec.photos.length?`<div class="sum-card"><div class="sum-card-title">📷 Proof Photos (${rec.photos.length})</div><div style="display:flex;gap:8px;flex-wrap:wrap">${rec.photos.map(p=>`<img src="${p}" style="width:78px;height:78px;border-radius:10px;object-fit:cover;border:2.5px solid var(--success)">`).join('')}</div></div>`:''}
-    <button class="btn-share" onclick="shareSum()">📤 Share / Copy Summary</button>
-    <button class="btn-newshift" onclick="newShift()">↺ Start New Shift</button>
-    <div style="height:8px"></div>`;
-}
-
-function shareSum() {
-  const rec = S.history[0]; if (!rec) return;
-  const as = rec.actualStart ? fmtTime(new Date(rec.actualStart)) : '--';
-  const ae = rec.actualEnd ? fmtTime(new Date(rec.actualEnd)) : '--';
-  const text = `📋 BOOTS PHARMACY — SHIFT LOG\n${'─'.repeat(32)}\n📅 ${rec.date}\n⏰ ${rec.shiftStart||'--'} → ${rec.shiftEnd||'--'} (Actual: ${as} → ${ae})\n👥 ${rec.staff.join(', ')||'N/A'}\n\n${rec.tasks.map(t=>`${t.done?'✅':'○'} ${t.name}${t.type==='temp'&&t.ti?` (${t.ti}°C/${t.to}°C)`:''}`).join('\n')}\n\n📷 ${rec.photos.length} proof photo(s)${rec.notes?`\n📝 ${rec.notes}`:''}`.trim();
-  if (navigator.share) {
-    navigator.share({title:'Shift Log',text}).catch(()=>{});
-  } else {
-    navigator.clipboard.writeText(text).then(()=>toast('✅ Copied to clipboard!')).catch(()=>toast('Use Share button'));
   }
 }
 
-function newShift() {
-  if (!confirm('Start a fresh shift? Checklist will reset.')) return;
-  S.active=false; S.finished=false; S.actualStart=null; S.actualEnd=null;
-  S.staff=[]; S.tasks=defaultTasks(); S.photos=[]; S.notes=''; S.alarmFired=false; S.alarm15Fired=false;
-  document.getElementById('notes-ta').value='';
-  document.getElementById('btn-finish').style.background='';
-  document.getElementById('btn-finish').style.boxShadow='';
-  document.getElementById('btn-finish').textContent='✓ FINISH SHIFT & GENERATE SUMMARY';
-  save(); renderAll(); go('home'); toast('✅ Ready for new shift!');
-}
-
-/* ═══════════════════════════════════════
-   HISTORY
-═══════════════════════════════════════ */
-function renderHistory() {
-  const c = document.getElementById('hist-list');
-  if (!S.history?.length) {
-    c.innerHTML=`<div class="hist-empty"><div class="hist-empty-ico">📋</div><div style="font-family:var(--font-d);font-size:16px;font-weight:800;color:var(--text-2);margin-bottom:4px">No shifts yet</div><div style="font-size:13px;color:var(--text-4)">Completed shifts appear here</div></div>`;
-    return;
-  }
-  c.innerHTML = S.history.map(rec=>{
-    const as = rec.actualStart?fmtTime(new Date(rec.actualStart)):'--';
-    const ae = rec.actualEnd?fmtTime(new Date(rec.actualEnd)):'--';
-    const done = rec.tasks.filter(t=>t.done).length;
-    return `<div class="hist-item" onclick="viewHist('${rec.id}')">
-      <div style="display:flex;justify-content:space-between;align-items:start">
-        <div class="hist-date">${rec.date}</div>
-        <div class="hist-badge">✓ DONE</div>
-      </div>
-      <div class="hist-meta"><span>⏱ ${as} → ${ae}</span><span>✅ ${done}/${rec.tasks.length}</span></div>
-      ${rec.staff.length?`<div style="font-size:12px;color:var(--text-3);margin-top:4px">👥 ${rec.staff.join(', ')}</div>`:''}
-    </div>`;
-  }).join('');
-}
-
-function viewHist(id) {
-  const rec = S.history.find(r=>r.id===id); if(!rec) return;
-  renderSummary(rec); go('summary');
-  setTimeout(()=>{
-    const nb = document.querySelector('.btn-newshift');
-    if (nb) { nb.onclick=()=>go('history'); nb.textContent='← Back to History'; }
-  },100);
-}
-
-/* ═══════════════════════════════════════
-   VIBRATION
-═══════════════════════════════════════ */
-function vib(p) { if (navigator.vibrate) navigator.vibrate(p); }
-
-/* ═══════════════════════════════════════
-   ALARM CHECK (every minute)
-═══════════════════════════════════════ */
-function checkAlarm() {
-  if (!S.shiftStart || S.active || S.finished) return;
-  const now = new Date();
-  const cur = now.getHours()*60 + now.getMinutes();
-  const sh = toMins(S.shiftStart);
-  if (sh===null) return;
-  const diff = sh - cur;
-  if (diff===0 && !S.alarmFired) {
-    vib([800,200,800,200,800]); S.alarmFired=true; save();
-    showAlarm(`⏰ Shift starts NOW! (${S.shiftStart})`);
-  } else if (diff===15 && !S.alarm15Fired) {
-    vib([400,150,400]); S.alarm15Fired=true; save();
-    showAlarm(`⚠️ Shift in 15 minutes (${S.shiftStart})`);
+function saveData() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+  } catch (e) {
+    console.error('Failed to save data:', e);
+    showToast('⚠️ Storage full - clear old data');
   }
 }
 
-function showAlarm(msg) {
-  document.getElementById('alarm-sub').textContent = msg;
-  const el = document.getElementById('alarm');
-  el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'), 5500);
+// ═══════════════════════════════════════
+// DATE UTILITIES
+// ═══════════════════════════════════════
+function todayKey() {
+  const d = new Date();
+  return d.toISOString().slice(0, 10);
 }
 
-/* ═══════════════════════════════════════
-   COUNTDOWN (every 30s)
-═══════════════════════════════════════ */
-function updateCountdown() {
-  const el = document.getElementById('sw-countdown');
-  if (!S.shiftStart) { el.textContent='—'; return; }
-  if (S.active && S.actualStart) {
-    const el2 = document.getElementById('sw-countdown');
-    const m = Math.floor((Date.now()-new Date(S.actualStart))/60000);
-    el2.textContent = m < 60 ? `${m}m elapsed` : `${Math.floor(m/60)}h ${m%60}m`;
-    document.getElementById('sw-cd-chip').children[0].textContent='⏳';
-    return;
-  }
-  const cur = new Date(); const curM = cur.getHours()*60+cur.getMinutes();
-  const shM = toMins(S.shiftStart); if(!shM) return;
-  let diff = shM - curM; if (diff<0) diff+=1440;
-  if (diff===0) { el.textContent='NOW!'; return; }
-  el.textContent = diff < 60 ? `in ${diff}m` : `in ${Math.floor(diff/60)}h ${diff%60}m`;
+function formatTime(date) {
+  if (typeof date === 'string') date = new Date(date);
+  return date.toTimeString().slice(0, 5);
 }
 
-/* ═══════════════════════════════════════
-   TOAST
-═══════════════════════════════════════ */
-let toastT;
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show');
-  clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2800);
-}
-
-/* ═══════════════════════════════════════
-   UTIL
-═══════════════════════════════════════ */
-function esc(s) { if(!s)return''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-/* ═══════════════════════════════════════
-   INIT
-═══════════════════════════════════════ */
-function renderAll() {
-  renderHeader(); renderWidget(); renderStaff(); renderChecklist(); renderProof(); renderTT(); updateFinish();
-  if (S.notes) document.getElementById('notes-ta').value=S.notes;
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  document.getElementById('notes-ta').addEventListener('input', e=>{ S.notes=e.target.value; save(); });
-  document.getElementById('bell-btn').addEventListener('click', ()=>{
-    if (!S.shiftStart) { toast('Set a shift start time first'); return; }
-    toast(`🔔 Alarm set for ${S.shiftStart} — 3 long vibrations`); vib([80,50,80]);
-  });
-});
-
-load();
-renderAll();
-
-setInterval(renderHeader, 30000);
-setInterval(updateCountdown, 30000);
-setInterval(checkAlarm, 60000);
-updateCountdown();
-
-/* ═══════════════════════════════════════
-   SERVICE WORKER (PWA)
-═══════════════════════════════════════ */
-if ('serviceWorker' in navigator) {
-  const sw = `self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(clients.claim()));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>new Response('offline')))));`;
-  const blob = new Blob([sw],{type:'application/javascript'});
-  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
-}
-
-/* ═══════════════════════════════════════
-   MANIFEST (PWA install)
-═══════════════════════════════════════ */
-const mf = {
-  name:'BootsRx Shift Log',short_name:'BootsRx',
-  start_url:'.',display:'standalone',
-  background_color:'#F5F8FF',theme_color:'#1A5FD4',
-  orientation:'portrait',
-  icons:[{src:`data:image/svg+xml,`+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="40" fill="#1A5FD4"/><text x="96" y="120" font-size="90" text-anchor="middle" font-family="system-ui">💊</text></svg>`),sizes:'192x192',type:'image/svg+xml'}]
-};
-const ml = document.createElement('link'); ml.rel='manifest';
-ml.href = URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/json'}));
-document.head.appendChild(ml);
-</script>
-</body>
-</html>
+function formatDate(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  const days = ['
